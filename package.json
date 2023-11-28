@@ -11,6 +11,7 @@
   "author": "Jelle Maas",
   "license": "ISC",
   "dependencies": {
+    "axios": "^1.6.2",
     "discord-html-transcripts": "^3.2.0",
     "discord.js": "^14.13.0",
     "dotenv": "^16.0.3"
