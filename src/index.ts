@@ -1,13 +1,9 @@
 import {config} from "./config";
-import {getAllQuotes, type Response} from "./commands/listAllQuotes";
+import {getQuotes} from "./commands/quote/list-quotes";
 import {
-    AutocompleteInteraction,
     Client,
     Events,
-    GatewayIntentBits,
-    Snowflake,
-    CommandInteraction,
-    SlashCommandBuilder
+    GatewayIntentBits
 } from "discord.js";
 import {commands} from "./commands";
 
@@ -29,14 +25,12 @@ client.once(Events.ClientReady, async client => {
 
 client.on("interactionCreate", async (interaction) => {
         if (interaction.isAutocomplete()) {
-            if (interaction.commandName !== 'remove-quote') {
-
+            if (interaction.commandName !== 'quote') {
                 return;
             }
 
             const focusedValue = interaction.options.getFocused();
-            console.log(focusedValue);
-            const quotes = await getAllQuotes();
+            const quotes = await getQuotes();
             if (typeof quotes != 'object') {
                 return;
 
@@ -44,6 +38,7 @@ client.on("interactionCreate", async (interaction) => {
                 const filterChoices = quotes.filter((quote) =>
                     quote.text.toLowerCase().startsWith(focusedValue.toLowerCase())
                 )
+
                 const results = filterChoices.map((choice) => {
                     return {
                         name: choice.text,

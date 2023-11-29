@@ -1,12 +1,12 @@
 import axios from 'axios';
-import {config} from "../config";
-import {CommandInteraction, SlashCommandBuilder} from "discord.js";
+import {config} from "../../config";
+import {CommandInteraction, SlashCommandSubcommandBuilder} from "discord.js";
 
 
 const url: string = config.API_SERVER;
 
 // array for all the quotes
-var quotes: string[];
+let quotes: string[];
 
 // sends DELETE http request to API
 const removeQuote = async (quoteId: number) => {
@@ -30,8 +30,8 @@ const removeQuote = async (quoteId: number) => {
 
 
 // Slash command for the removal of quotes
-export const data = new SlashCommandBuilder()
-    .setName('remove-quote')
+const data = new SlashCommandSubcommandBuilder()
+    .setName('remove')
     .setDescription('remove a quote for the wall')
     .addStringOption(option =>
         option
@@ -40,18 +40,20 @@ export const data = new SlashCommandBuilder()
             .setRequired(true)
             .setAutocomplete(true));
 
-
-export async function execute(interaction: CommandInteraction) {
+async function execute(interaction: CommandInteraction) {
     console.log(interaction)
     const rmQuote = interaction.options.get('quote')?.value as string | undefined;
     console.log(`user input: ${rmQuote}`)
 
-    if(rmQuote) {
+    if (rmQuote) {
         const reply = await removeQuote(parseInt(rmQuote));
         return interaction.reply(reply)
     }
 
     return interaction.reply("smt went wrong")
 }
-    
-  
+
+export default {
+    data,
+    execute
+}

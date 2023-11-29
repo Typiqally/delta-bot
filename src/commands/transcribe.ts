@@ -2,12 +2,14 @@ import {CommandInteraction, SlashCommandBuilder, TextBasedChannel} from "discord
 import "discord-html-transcripts"
 import {createTranscript} from "discord-html-transcripts";
 
-export const data = new SlashCommandBuilder()
+const data = new SlashCommandBuilder()
     .setName("transcribe")
-    .addChannelOption(option => option.setName("channel").setDescription("Channel to transcribe").setRequired(true))
+    .addChannelOption(option => option.setName("channel")
+        .setDescription("Channel to transcribe")
+        .setRequired(true))
     .setDescription("Creates a transcript for a specific channel");
 
-export async function execute(interaction: CommandInteraction) {
+async function execute(interaction: CommandInteraction) {
     const targetChannelReference = interaction.options.get("channel")!.channel!
     const targetChannel = interaction.client.channels.cache.get(targetChannelReference.id)
 
@@ -23,4 +25,9 @@ export async function execute(interaction: CommandInteraction) {
         content: `Transcript for \`${targetChannelReference.name}\``,
         files: [attachment]
     })
+}
+
+export default {
+    data,
+    execute
 }
