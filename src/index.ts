@@ -1,5 +1,5 @@
 import {config} from "./config";
-import {Client, Events, GatewayIntentBits, Snowflake} from "discord.js";
+import {AutocompleteInteraction, Client, Events, GatewayIntentBits, Snowflake, CommandInteraction, SlashCommandBuilder} from "discord.js";
 import {commands} from "./commands";
 
 const client = new Client({
@@ -30,5 +30,14 @@ client.on("interactionCreate", async (interaction) => {
         await command.execute(interaction);
     }
 });
+
+client.on("interaction", async (interaction: AutocompleteInteraction) => {
+    if (!interaction.isAutocomplete()) { return; }
+    if (interaction.commandName !== 'remove-quote') { return; }
+   
+    const focusedValue: string = interaction.options.getFocused();
+    console.log(focusedValue);
+
+})
 
 client.login(config.TOKEN)
