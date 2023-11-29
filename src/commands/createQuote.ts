@@ -4,14 +4,14 @@ import {CommandInteraction, SlashCommandBuilder} from "discord.js";
 
 const url: string = config.API_SERVER;
 
-const sendQuote = async (username: string, quote: string) => {
+const sendQuote = async (discordId: string, quote: string) => {
     try {
       const response = await axios.post(url, {
         text:quote,
-        author:username,
+        discordId:discordId,
       });
   
-      console.log('Successfully sent username and quote to API: '+ response.data);
+      console.log('Successfully sent quote');
       return "Successfully sent to the Wall!"
     } catch (error) {
       console.error('Error sending username and quote to API:', error);
@@ -27,8 +27,8 @@ export const data = new SlashCommandBuilder()
 
     export async function execute(interaction: CommandInteraction) {
         const quote: string = interaction.options.get("quote")!.value as string;
-        const user: string = interaction.user.id;
-        const reply: string = await sendQuote(user, quote);
+        const userId: string = interaction.user.id;
+        const reply: string = await sendQuote(userId, quote);
         
         return interaction.reply(reply);
     }
