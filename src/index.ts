@@ -1,5 +1,14 @@
 import {config} from "./config";
-import {AutocompleteInteraction, Client, Events, GatewayIntentBits, Snowflake, CommandInteraction, SlashCommandBuilder} from "discord.js";
+import {getAllQuotes, type Response} from "./commands/listAllQuotes";
+import {
+    AutocompleteInteraction,
+    Client,
+    Events,
+    GatewayIntentBits,
+    Snowflake,
+    CommandInteraction,
+    SlashCommandBuilder
+} from "discord.js";
 import {commands} from "./commands";
 
 const client = new Client({
@@ -19,25 +28,44 @@ client.once(Events.ClientReady, async client => {
 });
 
 client.on("interactionCreate", async (interaction) => {
-    if (!interaction.isCommand()) {
-        return;
+        if (interaction.isAutocomplete()) {
+            if (interaction.commandName !== 'remove-quote') {
+
+                return;
+            }
+
+            const focusedValue = interaction.options.getFocused();
+            console.log(focusedValue);
+            const quotes = await getAllQuotes();
+            if (typeof quotes != 'object') {
+                return;
+
+            } else {
+                const filterChoices = quotes.filter((quote) =>
+                    quote.text.toLowerCase().startsWith(focusedValue.toLowerCase())
+                )
+                const results = filterChoices.map((choice) => {
+                    return {
+                        name: choice.text,
+                        value: choice.id.toString()
+                    };
+                });
+
+                interaction.respond(results.slice(0, 25))
+            }
+        }
+
+        if (interaction.isCommand()) {
+
+            const {commandName} = interaction;
+            const command = commands.find(c => c.data.name == commandName)
+
+            if (command) {
+                await command.execute(interaction);
+            }
+        }
     }
+)
 
-    const {commandName} = interaction;
-    const command = commands.find(c => c.data.name == commandName)
-
-    if (command) {
-        await command.execute(interaction);
-    }
-});
-
-client.on("interaction", async (interaction: AutocompleteInteraction) => {
-    if (!interaction.isAutocomplete()) { return; }
-    if (interaction.commandName !== 'remove-quote') { return; }
-   
-    const focusedValue: string = interaction.options.getFocused();
-    console.log(focusedValue);
-
-})
 
 client.login(config.TOKEN)
