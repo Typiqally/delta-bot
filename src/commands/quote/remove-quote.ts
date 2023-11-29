@@ -1,32 +1,5 @@
-import axios from 'axios';
-import {config} from "../../config";
 import {CommandInteraction, SlashCommandSubcommandBuilder} from "discord.js";
-
-
-const url: string = config.API_SERVER;
-
-// array for all the quotes
-let quotes: string[];
-
-// sends DELETE http request to API
-const removeQuote = async (quoteId: number) => {
-    try {
-        const response = await axios.delete(url, {
-            data: {
-                id: quoteId
-            }
-        });
-        console.log(
-            'Successfully deleted quote from API' +
-            "\nID: " + quoteId +
-            "\nHTTP-response: " + response
-        );
-        return "Successfully removed from the Wall!";
-    } catch (error) {
-        console.error('Error could not delete quote: ', error);
-        return "Something went wrong. Please contact Delta+";
-    }
-};
+import {deleteQuote} from "../../service/quote-service"
 
 
 // Slash command for the removal of quotes
@@ -46,7 +19,7 @@ async function execute(interaction: CommandInteraction) {
     console.log(`user input: ${rmQuote}`)
 
     if (rmQuote) {
-        const reply = await removeQuote(parseInt(rmQuote));
+        const reply = await deleteQuote(parseInt(rmQuote));
         return interaction.reply(reply)
     }
 

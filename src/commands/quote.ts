@@ -12,7 +12,7 @@ async function execute(interaction: CommandInteraction) {
     const command = quoteCommands.find(c => c.data.name == subCommandName)
 
     if (command) {
-        await command.execute(interaction);
+        return await command.execute(interaction);
     }
 }
 

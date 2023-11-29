@@ -1,11 +1,11 @@
 import {config} from "./config";
-import {getQuotes} from "./commands/quote/list-quotes";
 import {
     Client,
     Events,
     GatewayIntentBits
 } from "discord.js";
 import {commands} from "./commands";
+import {getQuotes} from "./service/quote-service";
 
 const client = new Client({
     intents: [
@@ -25,7 +25,8 @@ client.once(Events.ClientReady, async client => {
 
 client.on("interactionCreate", async (interaction) => {
         if (interaction.isAutocomplete()) {
-            if (interaction.commandName !== 'quote') {
+            console.log("autocompleting")
+            if (interaction.commandName !== 'quote' || interaction.options.getSubcommand() !== 'remove') {
                 return;
             }
 
