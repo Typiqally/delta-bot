@@ -12,7 +12,8 @@ const data = new SlashCommandSubcommandBuilder()
     .addIntegerOption(option =>
         option.setName("page")
             .setMinValue(0)
-            .setRequired(false))
+            .setRequired(false)
+            .setDescription("Page number"))
     .addUserOption(option =>
         option.setName("author")
             .setRequired(false)

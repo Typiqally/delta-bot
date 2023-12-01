@@ -4,12 +4,12 @@ const previous = new ButtonBuilder()
     .setCustomId('previous-page')
     .setLabel("◄")
     .setStyle(2);
-//.setStyle(ButtonStyle.Secondary);
+
 const next = new ButtonBuilder()
     .setCustomId('next-page')
     .setLabel('►')
     .setStyle(1);
-//.setStyle(ButtonStyle.Primary);
+
 const row = new ActionRowBuilder()
     .addComponents(previous, next);
 
