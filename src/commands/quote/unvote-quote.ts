@@ -11,12 +11,12 @@ const data = new SlashCommandSubcommandBuilder()
             .setAutocomplete(true));
 
 async function execute(interaction: CommandInteraction) {
-    const unvote = interaction.options.get('quote')?.value as string | undefined;
+    const unVote = interaction.options.get('quote')?.value as string | undefined;
     const discordId = interaction.user.id;
-    console.log(`user input: ${unvote}`)
+    console.log(`user input: ${unVote}`)
 
-    if (unvote) {
-        const reply = await unvoteQuote(parseInt(unvote), discordId);
+    if (unVote) {
+        const reply = await unvoteQuote(parseInt(unVote), discordId);
         return interaction.reply(reply)
     }
 
