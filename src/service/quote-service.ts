@@ -14,6 +14,18 @@ export const getAllQuotes = async (): Promise<Quote[] | string> => {
     }
 };
 
+export const getAuthorQuotes = async (authorId: string): Promise<Quote[] | string> => {
+    try {
+        const response = await axios.get(`${config.API_SERVER}?discordId=${authorId}`, );
+        console.log('Successfully received authors quotes');
+
+        return response.data.quotes as Quote[];
+    } catch (error) {
+        console.error('Error received the authors quotes from API:', error);
+        return "Something went wrong. Please contact Delta+"
+    }
+};
+
 export const getPageQuotes = async (pageNumber: number): Promise<Quote[] | string> => {
     try {
         const response = await axios.get(`${config.API_SERVER}?page=${pageNumber}`);
