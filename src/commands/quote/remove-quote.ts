@@ -23,7 +23,7 @@ async function execute(interaction: CommandInteraction) {
         return interaction.reply(reply)
     }
 
-    return interaction.reply("smt went wrong")
+    return interaction.reply("Something went wrong. Please contact Delta+")
 }
 
 export default {
