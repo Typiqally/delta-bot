@@ -1,12 +1,12 @@
 import axios from "axios";
 import {config} from "../config";
 
-export interface QuoteCollection {
-    total_count: number
+export type QuoteCollection = {
+    totalCount: number
     quotes: Quote[]
 }
 
-export interface Quote {
+export type Quote = {
     id: number
     text: string
     discordId: string
@@ -15,96 +15,49 @@ export interface Quote {
     votes: []
 }
 
-export const getAllQuotes = async (): Promise<QuoteCollection | string> => {
-    try {
-        const response = await axios.get(config.API_SERVER);
-        console.log('Successfully received all quotes');
-
-        return response.data as QuoteCollection;
-    } catch (error) {
-        console.error('Error received all the quotes from API:', error);
-        return "Something went wrong. Please contact Delta+"
-    }
-};
-
-export const getAuthorQuotes = async (authorId: string): Promise<QuoteCollection | string> => {
-    try {
-        const response = await axios.get(`${config.API_SERVER}?discordId=${authorId}`,);
-        console.log('Successfully received authors quotes');
-
-        return response.data as QuoteCollection;
-    } catch (error) {
-        console.error('Error received the authors quotes from API:', error);
-        return "Something went wrong. Please contact Delta+"
-    }
-};
-
-export const getPageQuotes = async (pageNumber: number): Promise<QuoteCollection | string> => {
-    try {
-        const response = await axios.get(`${config.API_SERVER}?page=${pageNumber}`);
-
-        return response.data as QuoteCollection;
-    } catch (error) {
-        console.error('Error received quotes from API:', error);
-        return "Something went wrong. Please contact Delta+"
-    }
+export type ErrorResponse = {
+    message: string
 }
 
-export const createQuote = async (discordId: string, quote: string) => {
-    try {
-        await axios.post(config.API_SERVER, {
-            text: quote,
-            discordId: discordId,
-        });
+export const getQuotes = async (
+    pageNumber: number | undefined = undefined,
+    authorId: string | undefined = undefined
+) => {
+    const url = new URL(config.API_SERVER)
 
-        console.log('Successfully sent quote');
-        return "Successfully sent to the Wall!"
-    } catch (error) {
-        console.error('Error sending username and quote to API:', error);
-        return "Something went wrong. Please contact Delta+"
+    if (pageNumber) {
+        url.searchParams.append("page", pageNumber.toString())
     }
+
+    if (authorId) {
+        url.searchParams.append("discordId", authorId)
+    }
+
+    return await axios.get<QuoteCollection | ErrorResponse>(url.href);
+};
+
+export const createQuote = async (discordId: string, quote: string) => {
+    return await axios.post<Quote | ErrorResponse>(config.API_SERVER, {
+        text: quote,
+        discordId: discordId,
+    });
 };
 
 
 export const deleteQuote = async (quoteId: number) => {
-    try {
-        const response = await axios.delete(`${config.API_SERVER}/${quoteId}`, {});
-        console.log(
-            'Successfully deleted quote from API' +
-            "\nID: " + quoteId +
-            "\nHTTP-response: " + response
-        );
-        return "Successfully removed from the Wall!";
-    } catch (error) {
-        console.error('Error could not delete quote: ', error);
-        return "Something went wrong. Please contact Delta+";
-    }
+    return await axios.delete(`${config.API_SERVER}/${quoteId}`, {});
 };
 
 export const voteQuote = async (quoteId: number, discordId: string) => {
-    try {
-        await axios.post(`${config.API_SERVER}/${quoteId}/vote`, {
-            discordId: discordId,
-        });
-
-        console.log('Successfully sent vote');
-        return "Successfully sent vote to the Wall!"
-    } catch (error) {
-        console.error('Error sending vote to API:', error);
-        return "Something went wrong. Please contact Delta+"
-    }
+    return await axios.post(`${config.API_SERVER}/${quoteId}/vote`, {
+        discordId: discordId,
+    });
 };
 
-export const unvoteQuote = async (quoteId: number, discordId: string) => {
-    try {
-        await axios.delete(`${config.API_SERVER}/${quoteId}/vote`, {
-            data: {discordId: discordId,}
-        });
-
-        console.log('Successfully sent unvote');
-        return "Successfully sent unvote to the Wall!"
-    } catch (error) {
-        console.error('Error sending unvote to API:', error);
-        return "Something went wrong. Please contact Delta+"
-    }
+export const unVoteQuote = async (quoteId: number, discordId: string) => {
+    return await axios.delete(`${config.API_SERVER}/${quoteId}/vote`, {
+        data: {
+            discordId: discordId,
+        }
+    });
 };

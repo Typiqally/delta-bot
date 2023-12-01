@@ -3,26 +3,25 @@ import {deleteQuote, voteQuote} from "../../service/quote-service";
 
 const data = new SlashCommandSubcommandBuilder()
     .setName("vote")
-    .setDescription("gives one vote to a quote")
+    .setDescription("Vote on a quote")
     .addStringOption(option =>
         option.setName("quote")
-            .setDescription("quote to vote")
+            .setDescription("Quote to vote")
             .setRequired(true)
             .setAutocomplete(true));
 
 async function execute(interaction: CommandInteraction) {
-    const vote = interaction.options.get('quote')?.value as string | undefined;
+    const quote = interaction.options.get('quote')?.value as string | undefined;
     const discordId = interaction.user.id;
-    console.log(`user input: ${vote}`)
 
-    if (vote) {
-        const reply = await voteQuote(parseInt(vote), discordId);
-        return interaction.reply(reply)
+    if (quote) {
+        const reply = await voteQuote(parseInt(quote), discordId);
+        if (reply.status == 200) {
+            return await interaction.reply("Successfully voted for quote.")
+        }
     }
-
-    return interaction.reply("Something went wrong. Please contact Delta+")
-
 }
+
 export default {
     data,
     execute

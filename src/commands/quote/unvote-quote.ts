@@ -1,9 +1,9 @@
 import {CommandInteraction, SlashCommandSubcommandBuilder} from "discord.js";
-import {unvoteQuote} from "../../service/quote-service";
+import {unVoteQuote} from "../../service/quote-service";
 
 const data = new SlashCommandSubcommandBuilder()
     .setName("unvote")
-    .setDescription("unvote to a quote")
+    .setDescription("Remove a vote from a quote")
     .addStringOption(option =>
         option.setName("quote")
             .setDescription("quote to unvote")
@@ -13,16 +13,15 @@ const data = new SlashCommandSubcommandBuilder()
 async function execute(interaction: CommandInteraction) {
     const unVote = interaction.options.get('quote')?.value as string | undefined;
     const discordId = interaction.user.id;
-    console.log(`user input: ${unVote}`)
 
     if (unVote) {
-        const reply = await unvoteQuote(parseInt(unVote), discordId);
-        return interaction.reply(reply)
+        const reply = await unVoteQuote(parseInt(unVote), discordId);
+        if (reply.status == 200) {
+            return await interaction.reply("Successfully removed vote from quote.")
+        }
     }
-
-    return interaction.reply("Something went wrong. Please contact Delta+")
-
 }
+
 export default {
     data,
     execute
