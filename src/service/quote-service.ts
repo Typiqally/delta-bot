@@ -20,7 +20,7 @@ export const getAllQuotes = async (): Promise<QuoteCollection | string> => {
         const response = await axios.get(config.API_SERVER);
         console.log('Successfully received all quotes');
 
-        return response.data.quotes as QuoteCollection;
+        return response.data as QuoteCollection;
     } catch (error) {
         console.error('Error received all the quotes from API:', error);
         return "Something went wrong. Please contact Delta+"
@@ -32,7 +32,7 @@ export const getAuthorQuotes = async (authorId: string): Promise<QuoteCollection
         const response = await axios.get(`${config.API_SERVER}?discordId=${authorId}`,);
         console.log('Successfully received authors quotes');
 
-        return response.data.quotes as QuoteCollection;
+        return response.data as QuoteCollection;
     } catch (error) {
         console.error('Error received the authors quotes from API:', error);
         return "Something went wrong. Please contact Delta+"

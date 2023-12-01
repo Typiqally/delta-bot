@@ -30,7 +30,7 @@ client.on("interactionCreate", async (interaction) => {
             const focusedValue = interaction.options.getFocused();
             const quotes = await getAllQuotes();
 
-            if (typeof quotes != 'object') {
+            if (typeof quotes !== 'object') {
                 return;
             }
 
