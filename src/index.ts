@@ -24,29 +24,33 @@ client.once(Events.ClientReady, async client => {
 });
 
 client.on("interactionCreate", async (interaction) => {
-        if (interaction.isAutocomplete()) {
-            const focusedValue = interaction.options.getFocused();
-            const response = await getQuotes();
+        try {
+            if (interaction.isAutocomplete()) {
+                const focusedValue = interaction.options.getFocused();
+                const response = await getQuotes();
 
-            if (response.status != 200) {
-                return
+                if (response.status != 200) {
+                    return
+                }
+
+                const collection = response.data as QuoteCollection
+                const results = collection.quotes.filter((quote) => quote.text.toLowerCase().startsWith(focusedValue.toLowerCase()))
+                    .map((choice) => ({
+                        name: choice.text,
+                        value: choice.id.toString()
+                    }));
+
+                await interaction.respond(results.slice(0, 25))
+            } else if (interaction.isCommand()) {
+                const {commandName} = interaction;
+                const command = commands.find(c => c.data.name == commandName)
+
+                if (command) {
+                    await command.execute(interaction);
+                }
             }
-
-            const collection = response.data as QuoteCollection
-            const results = collection.quotes.filter((quote) => quote.text.toLowerCase().startsWith(focusedValue.toLowerCase()))
-                .map((choice) => ({
-                    name: choice.text,
-                    value: choice.id.toString()
-                }));
-
-            interaction.respond(results.slice(0, 25))
-        } else if (interaction.isCommand()) {
-            const {commandName} = interaction;
-            const command = commands.find(c => c.data.name == commandName)
-
-            if (command) {
-                await command.execute(interaction);
-            }
+        } catch (e) {
+            console.error(e)
         }
     }
 )
