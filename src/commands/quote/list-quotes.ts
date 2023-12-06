@@ -3,6 +3,7 @@ import {
     SlashCommandSubcommandBuilder
 } from "discord.js";
 import {ErrorResponse, getQuotes, QuoteCollection} from "../../service/quote-service";
+import {AxiosError} from "axios";
 
 
 const data = new SlashCommandSubcommandBuilder()
@@ -22,26 +23,30 @@ async function execute(interaction: CommandInteraction) {
     const pageNumber = interaction.options.get("page")?.value as number | undefined;
     const authorId = interaction.options.get("author")?.value as string | undefined;
 
-    const response = await getQuotes(pageNumber ?? 0, authorId);
-    if (response.status != 200) {
-        const error = response.data as ErrorResponse
-        return await interaction.reply(error.message)
-    }
+    getQuotes(pageNumber ?? 0, authorId)
+        .then(async (response) => {
+            const collection = response.data as QuoteCollection
 
-    const collection = response.data as QuoteCollection
-    if (collection.quotes.length == 0) {
-        return await interaction.reply({
-            content: "No quotes found"
+            if (collection.quotes.length == 0) {
+                return await interaction.reply({
+                    content: "No quotes found"
+                })
+            }
+
+            const reply = collection.quotes.slice(0, 20).map(quote =>
+                `*\"${quote.text}\"* with **${quote.votes.length} votes**`
+            ).join("\n")
+
+            return await interaction.reply({
+                content: reply
+            });
         })
-    }
-
-    const reply = collection.quotes.slice(0, 20).map(quote =>
-        `*\"${quote.text}\"* with **${quote.votes.length} votes**`
-    ).join("\n")
-
-    return await interaction.reply({
-        content: reply
-    });
+        .catch(async (error: AxiosError) => {
+            if (error.response) {
+                const errorMessage = error.response.data as ErrorResponse
+                await interaction.reply(errorMessage.message)
+            }
+        })
 }
 
 export default {

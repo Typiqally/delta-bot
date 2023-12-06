@@ -1,5 +1,5 @@
 import {CommandInteraction, SlashCommandSubcommandBuilder} from "discord.js";
-import {deleteQuote} from "../../service/quote-service"
+import {deleteQuote, ErrorResponse} from "../../service/quote-service"
 
 
 // Slash command for the removal of quotes
@@ -16,12 +16,20 @@ const data = new SlashCommandSubcommandBuilder()
 async function execute(interaction: CommandInteraction) {
     const quoteId = interaction.options.get('quote')?.value as string | undefined;
 
-    if (quoteId) {
-        const response = await deleteQuote(parseInt(quoteId));
-        if (response.status == 200) {
-            return await interaction.reply("Successfully removed from the wall!")
-        }
+    if (!quoteId) {
+        return;
     }
+
+    deleteQuote(parseInt(quoteId))
+        .then(async (response) => {
+            return await interaction.reply("Successfully removed from the wall!")
+        })
+        .catch(async (error) => {
+            if (error.response) {
+                const errorMessage = error.response.data as ErrorResponse
+                await interaction.reply(errorMessage.message)
+            }
+        })
 }
 
 export default {
