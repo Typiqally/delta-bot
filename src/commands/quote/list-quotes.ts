@@ -2,7 +2,7 @@ import {
     CommandInteraction,
     SlashCommandSubcommandBuilder
 } from "discord.js";
-import {ErrorResponse, getQuotes, QuoteCollection} from "../../service/quote-service";
+import {ErrorResponse, getQuotes, QuoteCollection } from "../../service/quote-service";
 
 
 const data = new SlashCommandSubcommandBuilder()
