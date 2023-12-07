@@ -15,6 +15,12 @@ export type Quote = {
     votes: []
 }
 
+export type QuoteVote = {
+    id: number
+    discordId: string
+    quoteId: number
+}
+
 export type ErrorResponse = {
     message: string
 }
@@ -33,11 +39,11 @@ export const getQuotes = async (
         url.searchParams.append("discordId", authorId)
     }
 
-    return await axios.get<QuoteCollection | ErrorResponse>(url.href);
+    return axios.get<QuoteCollection>(url.href);
 };
 
 export const createQuote = async (discordId: string, quote: string) => {
-    return await axios.post<Quote | ErrorResponse>(config.API_SERVER, {
+    return axios.post<Quote>(config.API_SERVER, {
         text: quote,
         discordId: discordId,
     });
@@ -45,17 +51,17 @@ export const createQuote = async (discordId: string, quote: string) => {
 
 
 export const deleteQuote = async (quoteId: number) => {
-    return await axios.delete(`${config.API_SERVER}/${quoteId}`, {});
+    return axios.delete(`${config.API_SERVER}/${quoteId}`, {});
 };
 
 export const voteQuote = async (quoteId: number, discordId: string) => {
-    return await axios.post(`${config.API_SERVER}/${quoteId}/vote`, {
+    return axios.post<QuoteVote>(`${config.API_SERVER}/${quoteId}/vote`, {
         discordId: discordId,
     });
 };
 
 export const unVoteQuote = async (quoteId: number, discordId: string) => {
-    return await axios.delete(`${config.API_SERVER}/${quoteId}/vote`, {
+    return axios.delete(`${config.API_SERVER}/${quoteId}/vote`, {
         data: {
             discordId: discordId,
         }

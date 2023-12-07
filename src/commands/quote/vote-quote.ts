@@ -1,5 +1,6 @@
 import {CommandInteraction, SlashCommandSubcommandBuilder} from "discord.js";
-import {deleteQuote, voteQuote} from "../../service/quote-service";
+import {ErrorResponse, voteQuote} from "../../service/quote-service";
+import {AxiosError} from "axios";
 
 const data = new SlashCommandSubcommandBuilder()
     .setName("vote")
@@ -14,12 +15,20 @@ async function execute(interaction: CommandInteraction) {
     const quote = interaction.options.get('quote')?.value as string | undefined;
     const discordId = interaction.user.id;
 
-    if (quote) {
-        const reply = await voteQuote(parseInt(quote), discordId);
-        if (reply.status == 200) {
-            return await interaction.reply("Successfully voted for quote.")
-        }
+    if (!quote) {
+        return;
     }
+
+    voteQuote(parseInt(quote), discordId)
+        .then(async () => {
+            await interaction.reply("Successfully voted for quote.")
+        })
+        .catch(async (error: AxiosError) => {
+            if (error.response) {
+                const errorMessage = error.response.data as ErrorResponse
+                await interaction.reply(errorMessage.message)
+            }
+        })
 }
 
 export default {

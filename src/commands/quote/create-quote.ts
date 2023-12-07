@@ -19,13 +19,16 @@ async function execute(interaction: CommandInteraction) {
         return await interaction.reply("Quote should be less than 100 words");
     }
 
-    const response = await createQuote(userId, quote);
-    if (response.status == 201) {
-        return await interaction.reply("Successfully created quote on the wall, you should see it appear soon.");
-    }
-
-    const error = response.data as ErrorResponse
-    return await interaction.reply(error.message);
+    createQuote(userId, quote)
+        .then(async (response) => {
+            return await interaction.reply("Successfully created quote on the wall, you should see it appear soon.");
+        })
+        .catch(async (error) => {
+            if (error.response) {
+                const errorMessage = error.response.data as ErrorResponse
+                await interaction.reply(errorMessage.message)
+            }
+        })
 }
 
 export default {
